@@ -9,7 +9,10 @@ import xml.etree.ElementTree as ET
 import datetime
 import glob, os,zlib
 import hashlib
+import argparse
 
+
+# SHA1 routine, "stolen" somewhere in the internet
 def sha1(file):
     BLOCKSIZE = 65536
     hasher = hashlib.sha1()
@@ -19,6 +22,8 @@ def sha1(file):
             hasher.update(buf)  
             buf = afile.read(BLOCKSIZE)
             return(hasher.hexdigest())
+
+# CRC32 - Also "stolen" somewhere in the internet            
 def crc32(path):
     f = open(path,'rb')
     csum = None
@@ -39,36 +44,75 @@ def crc32(path):
     return csum
     
 def main():
+    #Initial parameters, Can (and should) be overwritten via command line arguments
     gameName = "Test"
     hashFile = "C:\\Users\\id087082\\Downloads\\neogeo.xml"
     cartPath = "C:\\Users\\id087082\\Downloads\\cart\\"
+    publisher = "@ZayaMatias"
+    parser = argparse.ArgumentParser(description='Update MAME neogeo hash file')
+    parser.add_argument('--gameName', help='name of the game to compile and execute')
+    parser.add_argument('--cartPath', help='path where the final buils will be stored (usually a MAME ROM directory)')
+    parser.add_argument('--hashFile', help='Location of the MAME Hash file')
+    parser.add_argument('--publisher', help='publisher of the game (usually you)')
+    args = vars(parser.parse_args())
+    if args["gameName"] != None:
+        gameName=args["gameName"]
+    else:
+        print ("please enter a game name")
+        exit
+    if args["cartPath"] != None:
+        cartPath=args["cartPath"]
+    else:
+        print ("please enter a cart path")
+        exit
+    if args["hashFile"] != None:
+        hashFile=args["hashFile"]
+    else:
+        print ("please enter the hash file location")
+        exit
+    if args["publisher"] != None:
+        publisher=args["publisher"]
+    else:
+        publisher= "Unknown"
+
+    # XML File
     xmlFile = ET.parse(hashFile) 
     e = xmlFile.getroot()
+    #Go through all the "software" tags
     for atype in e.findall('software'):
+        #If it is exsiting, just delete it
         if atype.get('name') == gameName:
             e.remove (atype)
+    #Create new tag "software"
     newGame = ET.SubElement(xmlFile.getroot(), 'software')
+    #Name as defined in the config... This should also be the game to execute in MAME
     newGame.attrib['name']=gameName
+    #Description of the game
     newGameDescription  = ET.SubElement(newGame,'description')
     newGameDescription.text = "Auto created for game "+gameName
+    #Year of creation (current year)
     newGameYear = ET.SubElement(newGame,'year')
     newGameYear.text = str(datetime.datetime.now().year)
+    #Publisher
     newGameDescription  = ET.SubElement(newGame,'publisher')
-    newGameDescription.text = "New Neo Geo Developper"
+    newGameDescription.text = publisher
+    #Not sure what these tags are for
     newSharedFeat  = ET.SubElement(newGame,'sharedfeat')
     newSharedFeat.attrib['name'] = "release"
     newSharedFeat.attrib['value'] = "AES"
     newSharedFeat  = ET.SubElement(newGame,'sharedfeat')
     newSharedFeat.attrib['name'] = "compatibility"
     newSharedFeat.attrib['value'] = "AES"
+    #Define this as a neo-geo cart, maybe later also for CD's
     newPart  = ET.SubElement(newGame,'part')
     newPart.attrib['interface'] = "neo_cart"
     newPart.attrib['name'] = "cart"
-    #Data Areas
+    #Data Areas, defined here all the data areas that are present in the XML, with the different attributes
     dataAreasDefinitions = [[["endianness","big"],["name","maincpu"],["size","_SIZE_"],["width","16"]],[["name","fixed"],["size","_SIZE_"]],[["name","audiocpu"],["size","_SIZE_"]],[["name","ymsnd"],["size","_SIZE_"]],[["name","sprites"],["size","_SIZE_"]]]
     extensions=[["maincpu","p",0],["fixed","s",0],["audiocpu","m",0],["ymsnd","v",0],["sprites","c",0]]
     os.chdir(cartPath)
     cartFiles = []
+    # go through all filetypes and get present files and their sizes (first to sum all)
     for extension in extensions:
         cartFiles.append([extension[0],[]])
         # Check extensions first
@@ -81,11 +125,11 @@ def main():
             extension[2]=extension[2]+os.path.getsize(cartPath+file)
             cartFiles[len(cartFiles)-1][1].append(file)
     
-        #check for .rom files then
+        #check for .bin files then
         for file in glob.glob("*[_-]"+extension[1]+"*.bin"):
             extension[2]=extension[2]+os.path.getsize(cartPath+file)
             cartFiles[len(cartFiles)-1][1].append(file)
-    
+    #Create dataarea tags
     for dataAreaDefinition in dataAreasDefinitions:
         newDataArea = ET.SubElement(newPart,"dataarea")
         for element in dataAreaDefinition:
@@ -95,7 +139,7 @@ def main():
         for element in newPart.findall("dataarea"):
             if element.get("name") == extension[0]:
                 element.set("size",str(hex(extension[2])))
-    
+    #Go through dataareas and include roms
     for element in newPart.findall("dataarea"):
         for fileList in cartFiles:
             if fileList[0]==element.get("name"):
@@ -103,11 +147,13 @@ def main():
                 sproffset = 0
                 odd = True
                 for file in fileList[1]:    
+                    #create each rom element
                     newRom = ET.SubElement(element,"rom")
                     newRom.attrib["name"]=file
                     fileSize = os.path.getsize(cartPath+file)
                     newRom.attrib["size"]=hex(fileSize)
                     newRom.attrib["offset"]=hex(offset)
+                    #Sprites are a special case
                     if fileList[0]=="sprites":
                         if odd:
                             sproffset = sproffset + fileSize
@@ -120,11 +166,13 @@ def main():
                         newRom.attrib["loadflag"]="load16_byte"
                     else:
                         offset = offset + fileSize
+                    # Create CRC and SHA 
                     newRom.attrib["crc"]=hex(crc32(cartPath+file))
                     newRom.attrib["sha1"]=sha1(cartPath+file)
                     if fileList[0]=="maincpu":
+                        #This is due to the endian formatting
                         newRom.attrib["loadflag"]="load16_word_swap"
-    
+    #Update XML file
     xmlFile.write(hashFile)
     
 if __name__ == '__main__':
