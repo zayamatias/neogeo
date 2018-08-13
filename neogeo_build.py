@@ -41,7 +41,7 @@ def crc32(path):
         f.close()
     if csum is not None:
         csum = csum & 0xffffffff
-    return csum
+    return (format(csum,'x'))
 
 def main():
     #Initial parameters, Can (and should) be overwritten via command line arguments
@@ -160,7 +160,7 @@ def main():
                     else:
                         offset = offset + fileSize
                     # Create CRC and SHA
-                    newRom.attrib["crc"]=hex(crc32(cartPath+file))
+                    newRom.attrib["crc"]=crc32(cartPath+file)
                     newRom.attrib["sha1"]=sha1(cartPath+file)
                     if fileList[0]=="maincpu":
                         #This is due to the endian formatting
