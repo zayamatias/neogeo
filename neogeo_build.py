@@ -19,11 +19,11 @@ def sha1(file):
     with open(file, 'rb') as afile:
         buf = afile.read(BLOCKSIZE)
         while len(buf) > 0:
-            hasher.update(buf)  
+            hasher.update(buf)
             buf = afile.read(BLOCKSIZE)
             return(hasher.hexdigest())
 
-# CRC32 - Also "stolen" somewhere in the internet            
+# CRC32 - Also "stolen" somewhere in the internet
 def crc32(path):
     f = open(path,'rb')
     csum = None
@@ -42,7 +42,7 @@ def crc32(path):
     if csum is not None:
         csum = csum & 0xffffffff
     return csum
-    
+
 def main():
     #Initial parameters, Can (and should) be overwritten via command line arguments
     gameName = "Test"
@@ -76,7 +76,7 @@ def main():
         publisher= "Unknown"
     print ("Updating Hash File")
     # XML File
-    xmlFile = ET.parse(hashFile) 
+    xmlFile = ET.parse(hashFile)
     e = xmlFile.getroot()
     #Go through all the "software" tags
     for atype in e.findall('software'):
@@ -110,31 +110,24 @@ def main():
     #Data Areas, defined here all the data areas that are present in the XML, with the different attributes
     dataAreasDefinitions = [[["endianness","big"],["name","maincpu"],["size","_SIZE_"],["width","16"]],[["name","fixed"],["size","_SIZE_"]],[["name","audiocpu"],["size","_SIZE_"]],[["name","ymsnd"],["size","_SIZE_"]],[["name","sprites"],["size","_SIZE_"]]]
     extensions=[["maincpu","p",0],["fixed","s",0],["audiocpu","m",0],["ymsnd","v",0],["sprites","c",0]]
-    os.chdir(cartPath)
+    os.chdir(cartPath+"/")
     cartFiles = []
     # go through all filetypes and get present files and their sizes (first to sum all)
     for extension in extensions:
         cartFiles.append([extension[0],[]])
         # Check extensions first
-        for file in glob.glob("*."+extension[1]+"??"):
-            extension[2]=extension[2]+os.path.getsize(cartPath+file)
-            cartFiles[len(cartFiles)-1][1].append(file)
-        
-        #check for .rom files then
-        for file in glob.glob("*[_-]"+extension[1]+"*.rom"):
-            extension[2]=extension[2]+os.path.getsize(cartPath+file)
-            cartFiles[len(cartFiles)-1][1].append(file)
-    
-        #check for .bin files then
-        for file in glob.glob("*[_-]"+extension[1]+"*.bin"):
-            extension[2]=extension[2]+os.path.getsize(cartPath+file)
-            cartFiles[len(cartFiles)-1][1].append(file)
+        patterns = ["*.["+extension[1]+"]*","*[_-]"+extension[1]+"*.rom","*[_-]"+extension[1]+"*.bin"]
+        for pattern in patterns:
+            for file in glob.glob(pattern):
+                extension[2]=extension[2]+os.path.getsize(cartPath+file)
+                cartFiles[len(cartFiles)-1][1].append(file)
+
     #Create dataarea tags
     for dataAreaDefinition in dataAreasDefinitions:
         newDataArea = ET.SubElement(newPart,"dataarea")
         for element in dataAreaDefinition:
             newDataArea.attrib[element[0]]=element[1]
-    #Update Sizes        
+    #Update Sizes
     for extension in extensions:
         for element in newPart.findall("dataarea"):
             if element.get("name") == extension[0]:
@@ -146,7 +139,7 @@ def main():
                 offset = 0
                 sproffset = 0
                 odd = True
-                for file in fileList[1]:    
+                for file in fileList[1]:
                     #create each rom element
                     newRom = ET.SubElement(element,"rom")
                     newRom.attrib["name"]=file
@@ -166,7 +159,7 @@ def main():
                         newRom.attrib["loadflag"]="load16_byte"
                     else:
                         offset = offset + fileSize
-                    # Create CRC and SHA 
+                    # Create CRC and SHA
                     newRom.attrib["crc"]=hex(crc32(cartPath+file))
                     newRom.attrib["sha1"]=sha1(cartPath+file)
                     if fileList[0]=="maincpu":
@@ -174,6 +167,6 @@ def main():
                         newRom.attrib["loadflag"]="load16_word_swap"
     #Update XML file
     xmlFile.write(hashFile)
-    
+
 if __name__ == '__main__':
-    main()    
+    main()
