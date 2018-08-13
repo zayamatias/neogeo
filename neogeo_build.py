@@ -74,7 +74,7 @@ def main():
         publisher=args["publisher"]
     else:
         publisher= "Unknown"
-
+    print ("Updating Hash File")
     # XML File
     xmlFile = ET.parse(hashFile) 
     e = xmlFile.getroot()
