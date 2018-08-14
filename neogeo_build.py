@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Aug  9 09:56:33 2018
-
-@author: id087082
-"""
 
 import xml.etree.ElementTree as ET
 import datetime
@@ -50,31 +44,19 @@ def main():
     cartPath = "C:\\Users\\id087082\\Downloads\\cart\\"
     publisher = "@ZayaMatias"
     parser = argparse.ArgumentParser(description='Update MAME neogeo hash file')
-    parser.add_argument('--gameName', help='name of the game to compile and execute')
-    parser.add_argument('--cartPath', help='path where the final buils will be stored (usually a MAME ROM directory)')
-    parser.add_argument('--hashFile', help='Location of the MAME Hash file')
+    parser.add_argument('--gameName', help='name of the game to compile and execute', required=True)
+    parser.add_argument('--cartPath', help='path where the final buils will be stored (usually a MAME ROM directory)', required=True)
+    parser.add_argument('--hashFile', help='Location of the MAME Hash file', required=True)
     parser.add_argument('--publisher', help='publisher of the game (usually you)')
     args = vars(parser.parse_args())
-    if args["gameName"] != None:
-        gameName=args["gameName"]
-    else:
-        print ("please enter a game name")
-        exit
-    if args["cartPath"] != None:
-        cartPath=args["cartPath"]
-    else:
-        print ("please enter a cart path")
-        exit
-    if args["hashFile"] != None:
-        hashFile=args["hashFile"]
-    else:
-        print ("please enter the hash file location")
-        exit
+    gameName=args["gameName"]
+    cartPath=args["cartPath"]
+    hashFile=args["hashFile"]
     if args["publisher"] != None:
         publisher=args["publisher"]
     else:
         publisher= "Unknown"
-    print ("Updating Hash File")
+    print ("Updating Hash File "+hashFile)
     # XML File
     xmlFile = ET.parse(hashFile)
     e = xmlFile.getroot()
@@ -167,6 +149,7 @@ def main():
                         newRom.attrib["loadflag"]="load16_word_swap"
     #Update XML file
     xmlFile.write(hashFile)
-
+    print ("Hash File "+hashFile+ "updated succesfully ")
+    
 if __name__ == '__main__':
     main()
