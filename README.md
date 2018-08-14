@@ -1,5 +1,10 @@
 # neogeo tools
-Some neogeo tools (for testing purposes)
+Some neogeo tools (for testing purposes) - ALl information you can find here is "inspired" by the follwoing unvaluable resources:
+
+* http://www.ajworld.net/neogeodev/
+* https://wiki.neogeodev.org
+
+As soon as I can I will add some information on "HOWTO" setup a proper development environment for the NeoGeo.
 
 ## mame_hash.py
 
