@@ -1,146 +1,110 @@
 # (GNU) Makefile for a simple Hello World program
 # from "Neo-Geo Assembly Programming for the Absolute Beginner" by freem
 # http://ajworld.net/neogeodev/beginner/
+# Adaptations by @zayamatias
 ################################################################################
 # tool binaries #
 #################
 # CP - copy tool
 
 CP=cp
+############################################
+# TOOLS Definitions                        #
+############################################
+
 
 # TOOL_VASM68K - filename and/or path to vasm (m68k with mot syntax)
-
-TOOL_VASM68K = /home/matias/NeoGeoDev/Tools/vasmm68k_mot
-
+TOOL_VASM68K = ~/NeoGeoDev/Tools/vasmm68k_mot
 # TOOL_VASMZ80 - filename and/or path to vasm (z80 with oldstyle syntax)
-
-TOOL_VASMZ80 = /home/matias/NeoGeoDev/Tools/vasmz80_oldstyle
-
+TOOL_VASMZ80 = ~/NeoGeoDev/Tools/vasmz80_oldstyle
 # TOOL_MKISOFS - filename and/or path to mkisofs
-
 TOOL_MKISOFS = mkisofs
-
 # TOOL_CHDMAN - filename and/or path to chdman
-
 TOOL_CHDMAN = chdman
-
 # TOOL_ROMWAK - filename and/or path to romwak
-
-TOOL_ROMWAK = /home/matias/NeoGeoDev/Tools/romwak
-
+TOOL_ROMWAK = ~/NeoGeoDev/Tools/romwak
 # TOOL_NEOSPRCONV - filename and/or path to NeoSprConv
-
-TOOL_NEOSPRCONV = /home/matias/NeoGeoDev/Tools/neosprconv
-
+TOOL_NEOSPRCONV = ~/NeoGeoDev/Tools/neosprconv
 # TOOL_EMULATOR
-
 TOOL_EMULATOR = mame neogeo
-
 # TOOL_MAME SETUP
+TOOL_MAME_SETUP = python ~/NeoGeoDev/Tools/mame_hash.py
 
-TOOL_MAME_SETUP = python /home/matias/NeoGeoDev/Tools/build.py
+############################################
+# Variables definitios                     #
+############################################
 
 #PUBLISHER (FOR MAME)
-
 PUBLISHER = "@ZayaMatias"
+GAME_NAME = HelloWorld
+
+############################################
+# File Locations                           #
+############################################
 
 #MAME HASH FILE
-
 MAME_HASHFILE =/usr/share/games/mame/hash/neogeo.xml
-
-################################################################################
-# input paths and filenames  #
-############################
-
 # SOURCE_68K, SOURCE_Z80 - base paths for source code directories
-
 SOURCE_68K = src_68k
 SOURCE_Z80 = src_z80
-
 # INPUT_68K - filename of main 68K code file
-
 INPUT_68K = $(SOURCE_68K)/main.asm
-
 # INPUT_Z80 - filename of main Z80 code file
-
 INPUT_Z80 = $(SOURCE_Z80)/simple.asm
-
-# INPUT_FIX - filename of Fix layer tile data file
-
-INPUT_FIX = hello.fix
-
 # INPUT_SPR - filename of Sprite tile data file (4BPP SMS/GG/WSC format)
-
 INPUT_SPR = spr/HELLO.sms
 
-################################################################################
+
+# INPUT_FIX - filename of Fix layer tile data file
+INPUT_FIX = fixed
+
+
+##########################
 # intermediate filenames #
 ##########################
 
 # INTERMEDIATE_68K - Intermediate file for 68K code (cart only)
-
 INTERMEDIATE_68K = out.p
-
 # INTERMEDIATE_SPR_CART - Intermediate file for converting sprite data to cart format
-
-INTERMEDIATE_SPR_CART = hello.c0
+INTERMEDIATE_SPR_CART = $(GAME_NAME).c0
 
 ################################################################################
 # output paths and filenames #
 ##############################
 
 # OUTPUT_CART, OUTPUT_CD - base output paths for cart and CD targets
-
-OUTPUT_CART = /home/matias/NeoGeoDev/Projects/HelloWorld/_cart
-OUTPUT_CD   = /home/matias/NeoGeoDev/Projects/HelloWorld/_cd
-
+BASE_PATH = ~/NeoGeoDev/Projects/
+OUTPUT_CART = $(BASE_PATH)$(GAME_NAME)/_cart
+OUTPUT_CD   = _cd
 # OUTPUT_PRG_CART, OUTPUT_PRG_CD
-
-OUTPUT_PRG_CART=$(OUTPUT_CART)/hello-p1.p1
-OUTPUT_PRG_CD=$(OUTPUT_CD)/HELLO.PRG
-
+OUTPUT_PRG_CART=$(OUTPUT_CART)/$(GAME_NAME)-p1.p1
+OUTPUT_PRG_CD=$(OUTPUT_CD)/$(GAME_NAME).PRG
 # OUTPUT_FIX_CART, OUPUT_FIX_CD - output paths for Fix file/S1 ROM.
-
-OUTPUT_FIX_CART=$(OUTPUT_CART)/hello-s1.s1
-OUTPUT_FIX_CD=$(OUTPUT_CD)/HELLO.FIX
-
+OUTPUT_FIX_CART=$(OUTPUT_CART)/
+OUTPUT_FIX_CD=$(OUTPUT_CD)/
 # OUTPUT_Z80_CART, OUTPUT_Z80_CD - output paths for Z80 driver/M1 ROM.
-
-OUTPUT_Z80_CART=$(OUTPUT_CART)/hello-m1.m1
-OUTPUT_Z80_CD=$(OUTPUT_CD)/HELLO.Z80
-
+OUTPUT_Z80_CART=$(OUTPUT_CART)/$(GAME_NAME)-m1.m1
+OUTPUT_Z80_CD=$(OUTPUT_CD)/$(GAME_NAME).Z80
 # OUTPUT_SPR_CART1, OUTPUT_SPR_CART2 - output paths for .c ROMs
-
-OUTPUT_SPR_CART1=$(OUTPUT_CART)/hello-c1.c1
-OUTPUT_SPR_CART2=$(OUTPUT_CART)/hello-c2.c2
-
+OUTPUT_SPR_CART1=$(OUTPUT_CART)/$(GAME_NAME)-c1.c1
+OUTPUT_SPR_CART2=$(OUTPUT_CART)/$(GAME_NAME)-c2.c2
 # OUTPUT_SPR_CD - output path for SPR file
-
-OUTPUT_SPR_CD=$(OUTPUT_CD)/HELLO.SPR
-
+OUTPUT_SPR_CD=$(OUTPUT_CD)/$(GAME_NAME).SPR
 # OUTPUT_PCM_CART, OUTPUT_PCM_CD - output path for PCM/.v ROMs
+OUTPUT_PCM_CART=$(OUTPUT_CART)/$(GAME_NAME)-v1.v1
+OUTPUT_PCM_CD=$(OUTPUT_CD)/$(GAME_NAME).PCM
 
-OUTPUT_PCM_CART=$(OUTPUT_CART)/hello-v1.v1
-OUTPUT_PCM_CD=$(OUTPUT_CD)/HELLO.PCM
-
-################################################################################
+########################
 # CD layout and output #
 ########################
 # FLAGS_MKISOFS - Flags for mkisofs
 # Mode 1 ISO (-iso-level 1); pad to multiple of 32K (-pad); Omit version number (-N)
-
 FLAGS_MKISOFS=-iso-level 1 -pad -N
-
 # NGCD_IMAGENAME - output image/ISO name
-
 NGCD_IMAGENAME=HelloTut
-
 # NGCD_DISCLABEL - Disc label (8 characters maximum)
-
 NGCD_DISCLABEL=HELLOTUT
-
 # CDFILES - the list of files to include on the CD (used with mkisofs)
-
 CDFILES = \
 	$(OUTPUT_CD)/ABS.TXT \
 	$(OUTPUT_CD)/BIB.TXT \
@@ -151,31 +115,25 @@ CDFILES = \
 	$(OUTPUT_PRG_CD) \
 	$(OUTPUT_SPR_CD) \
 	$(OUTPUT_Z80_CD)
-
 # OUTPUT_CDIMAGE - output path for .iso image
-
 OUTPUT_CDIMAGE=$(NGCD_IMAGENAME).iso
-
 # OUTPUT_CHDFILE - output path for .chd image
-
 OUTPUT_CHDFILE=$(NGCD_IMAGENAME).chd
 
-################################################################################
+################
 # CHD settings #
 ################
 # CHDMAN_ACTION - action for chdman
-
 CHDMAN_ACTION = createcd
 
 ################################################################################
 # target flags #
 ################
 # FLAGS_TARGET_* - Define flags used for building each target
-
 FLAGS_TARGET_CART = TARGET_CART
 FLAGS_TARGET_CD   = TARGET_CD
 
-################################################################################
+###########
 # targets #
 ###########
 
@@ -184,20 +142,18 @@ FLAGS_TARGET_CD   = TARGET_CD
 
 #==============================================================================#
 # all - build all targets (chd implies cd)
-
 all: cart chd
 
 #==============================================================================#
 # clean - remove all output files
-
 clean:
-	$(RM) $(OUTPUT_PRG_CART) $(OUTPUT_FIX_CART) $(OUTPUT_Z80_CART) $(OUTPUT_SPR_CART1) $(OUTPUT_SPR_CART2)
-	$(RM) $(OUTPUT_PRG_CD) $(OUTPUT_FIX_CD) $(OUTPUT_Z80_CD) $(OUTPUT_SPR_CD)
-	$(RM) $(OUTPUT_CDIMAGE) $(OUTPUT_CHDFILE)
+	$(RM) $(OUTPUT_CART)/*.*
+# $(OUTPUT_PRG_CART) $(OUTPUT_FIX_CART) $(OUTPUT_Z80_CART) $(OUTPUT_SPR_CART1) $(OUTPUT_SPR_CART2)
+#	$(RM) $(OUTPUT_PRG_CD) $(OUTPUT_FIX_CD) $(OUTPUT_Z80_CD) $(OUTPUT_SPR_CD)
+#	$(RM) $(OUTPUT_CDIMAGE) $(OUTPUT_CHDFILE)
 
 #==============================================================================#
 # distclean - remove all files not needed in a packaged distribution
-
 # this should KEEP:
 # .Z80/.m1 files
 # .SPR/.c* files
@@ -208,12 +164,10 @@ distclean:
 
 #==============================================================================#
 # cart - cartridge roms
-
 cart: fix prg z80 spr setup_emu emu
 
 #==============================================================================#
 # cd - .iso file (for Neo-Geo CD)
-
 cd: cdfix cdprg cdz80 cdspr
 	$(TOOL_MKISOFS) $(FLAGS_MKISOFS) -o $(OUTPUT_CDIMAGE) -V "$(NGCD_DISCLABEL)" $(CDFILES)
 
@@ -222,7 +176,6 @@ cd: cdfix cdprg cdz80 cdspr
 # -f : force
 # -i : input filename
 # -o : output filename
-
 FLAGS_CHDMAN = -f -i $(OUTPUT_CDIMAGE) -o $(OUTPUT_CHDFILE)
 
 chd: cd
@@ -243,7 +196,7 @@ FLAGS_VASM68K = -m68000 -devpac -Fbin
 
 # PROG_SIZE_KB - Program size in kilobytes (used for padding)
 
-PROG_SIZE_KB = 512
+PROG_SIZE_KB = 1024
 
 # FLAGS_ROMWAK_PRG_BYTESWAP - Define ROMWak flags and parameters for byteswapping P1.
 # /f: flip low/high bytes of a file
@@ -310,7 +263,7 @@ cdz80:
 # fix - fix layer data
 
 fix:
-	$(CP) $(INPUT_FIX) $(OUTPUT_FIX_CART)
+	$(CP) $(INPUT_FIX)/*.* $(OUTPUT_FIX_CART)
 
 #==============================================================================#
 # cdfix - cd fix layer data
@@ -362,8 +315,8 @@ cdspr:
 ## Update Mame File
 
 setup_emu:
-	${TOOL_MAME_SETUP} --gameName ${NGCD_IMAGENAME} --cartPath ${OUTPUT_CART}/ --hashFile ${MAME_HASHFILE} --publisher ${PUBLISHER}
+	$(TOOL_MAME_SETUP) --gameName $(GAME_NAME) --cartPath $(OUTPUT_CART)/ --hashFile $(MAME_HASHFILE) --publisher $(PUBLISHER)
 
 ## Run Emulator
 emu:
-	$(TOOL_EMULATOR) $(NGCD_IMAGENAME) -debug
+	$(TOOL_EMULATOR) $(GAME_NAME) -debug
