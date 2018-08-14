@@ -6,6 +6,8 @@ Some neogeo tools (for testing purposes) - ALl information you can find here is 
 
 As soon as I can I will add some information on "HOWTO" setup a proper development environment for the NeoGeo.
 
+I generally use Linux to do my stuff, but I'll try to keep it as Windows compatible as possible.
+
 ## mame_hash.py
 
 This file will insert the "ROM" into the mame hash file for easier excution of your code. It will look up the files in the cart (please respct naming convention of P,S,V,C,M roms) and add it to the mame hash file for neo geo so mame will execute the ROM easily.
@@ -15,6 +17,8 @@ _Parameters are_
 * cartPath : path where the final builds will be stored (usually a MAME accesible ROM directory), required
 * hashFile : Location of the MAME Hash file (neogeo.xml), required
 * publisher: publisher of the game (usually you), optional
+
+Needs Python to execute!
 
 ## Makefile
 
