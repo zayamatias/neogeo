@@ -1,5 +1,5 @@
 # neogeo tools
-Some neogeo tools (for testing purposes) - ALl information you can find here is "inspired" by the follwoing unvaluable resources:
+Some neogeo tools (for testing purposes) - All information you can find here is "inspired" by the follwoing unvaluable resources:
 
 * http://www.ajworld.net/neogeodev/
 * https://wiki.neogeodev.org
