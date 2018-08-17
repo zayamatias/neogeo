@@ -36,6 +36,7 @@ TOOL_MAME_SETUP = python ~/NeoGeoDev/Tools/mame_hash.py
 
 #PUBLISHER (FOR MAME)
 PUBLISHER = "@ZayaMatias"
+#GAME NAME (as used in MAME)
 GAME_NAME = HelloWorld
 
 ############################################
