@@ -1,5 +1,5 @@
 # neogeo tools
-Some neogeo tools (for testing purposes) - ALl information you can find here is "inspired" by the follwoing unvaluable resources:
+Some neogeo tools (for testing purposes) - All information you can find here is "inspired" by the follwoing unvaluable resources:
 
 * http://www.ajworld.net/neogeodev/
 * https://wiki.neogeodev.org
@@ -20,7 +20,7 @@ _Parameters are_
 
 Needs Python to execute!
 
-## Makefile
+## Makefile (to be uploaded soon)
 
 This file is an adaptation of the original makefile that can be found here http://www.ajworld.net/neogeodev/beginner/, it has only been tested in linux and requires install/build of the following tools:
 
