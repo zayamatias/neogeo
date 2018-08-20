@@ -13,11 +13,8 @@ for colidx in range (0,16):
 
 def main():
     args=str(sys.argv)
-    print("argume,ts",args)
-    inFile = "/home/matias/NeoGeoDev/Projects/OriginalHelloWorld/fixed/fixed_test_s1.rom"
-#    inFile = "/home/matias/NeoGeoDev/Projects/OriginalHelloWorld/fixed/203-s1.bin"
-    outFile = "/home/matias/NeoGeoDev/Projects/OriginalHelloWorld/fixed/fixed_test_s1.png"
-#    outFile = "/home/matias/NeoGeoDev/Projects/OriginalHelloWorld/fixed/203-s1.png"
+    inFile = "testfiles/265-s1.rom"
+    outFile = "testfiles/265-s1.png"
     #Detect what kind of file we're dealing with
     filetypes = [["FIXED","[a-zA-Z]*[_\-][sS][0-9].*"],["SPRITES","[a-zA-Z]*[_\-][cC][0-9].*"]]
     convert = ""
