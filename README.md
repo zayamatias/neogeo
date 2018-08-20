@@ -20,7 +20,7 @@ _Parameters are_
 
 Needs Python to execute!
 
-## Makefile (to be uploaded soon)
+## Makefile
 
 This file is an adaptation of the original makefile that can be found here http://www.ajworld.net/neogeodev/beginner/, it has only been tested in linux and requires install/build of the following tools:
 
