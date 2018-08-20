@@ -27,3 +27,6 @@ This file is an adaptation of the original makefile that can be found here http:
 * Vasm Assembler (http://sun.hasenbraten.de/vasm/)
 * ROMWak (https://github.com/freem/romwak)
 
+## convertfiles.py
+
+Will convert from Neogeo format to image and viceversa, for the moment only fixed format (SROM) to image works, initial release so still a lot to do.
