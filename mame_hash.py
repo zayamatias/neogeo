@@ -2,12 +2,12 @@
 import xml.etree.ElementTree as ET
 import datetime
 import glob, os,zlib
-import hashlib
+import sha
 import argparse
 
 
 # SHA1 routine, "stolen" somewhere in the internet
-def sha1(file):
+'''def sha1(file):
     BLOCKSIZE = 65536
     hasher = hashlib.sha1()
     with open(file, 'rb') as afile:
@@ -16,6 +16,13 @@ def sha1(file):
             hasher.update(buf)
             buf = afile.read(BLOCKSIZE)
             return(hasher.hexdigest())
+'''
+def sha1(file):
+    z = open(file, 'rb')
+    sha1 = sha.new(z.read()).hexdigest()
+    return (sha1)
+
+
 
 # CRC32 - Also "stolen" somewhere in the internet
 def crc32(path):
@@ -150,6 +157,6 @@ def main():
     #Update XML file
     xmlFile.write(hashFile)
     print ("Hash File "+hashFile+ "updated succesfully ")
-    
+
 if __name__ == '__main__':
     main()
