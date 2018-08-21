@@ -16,9 +16,9 @@ def main():
     args=sys.argv
     if len(args)<=2 :
         print ("Missing arguments, please use:\nconvertFiles.py <inputfile> <outputfile>\n")
-        sys.exit(1)
-    inFile = args[1]
-    outFile = args[2]
+        #sys.exit(1)
+    inFile = "/home/matias/neogeo/testfiles/zupan_c1.rom"#args[1]
+    outFile = "/home/matias/neogeo/testfiles/zupan.png" #args[2]
     #Detect what kind of file we're dealing with
     filetypes = [["FIXED","[a-zA-Z]*[_\-][sS][0-9].*"],["SPRITES","[a-zA-Z]*[_\-][cC][0-9].*"]]
     convert = ""
@@ -42,24 +42,20 @@ def convertSprites(inFile,outFile):
     print ("I shall convert your sprites into an image!")
     ### Find all sprite files
     # First find where the sequence number is located
-    replace = (inFile,inFile.find("-c")) 
-    if replace == 0 :
-        replace = (inFile,inFile.find("-C")) 
-    if replace == 0:
-        print ("Cannot find the C pattern, exiting")
-        sys.exit(1)
+    pe = re.compile ("[_-][cC]")
+    m = pe.search(inFile)
     searchFile = list(inFile)
-    searchFile[replace[1]+2]="?"
+    searchFile[m.span()[1]]="?"
     searchFile="".join(searchFile)
     numFiles = int(len(glob.glob(searchFile))/2)
     fileNum= 1
     outFileNum = 1
     for fileCount in range (numFiles):
         oddFileName = list(inFile)
-        oddFileName[replace[1]+2]=str(fileNum)
+        oddFileName[m.span()[1]]=str(fileNum)
         oddFileName = "".join(oddFileName)
         evenFileName = list(inFile)
-        evenFileName[replace[1]+2]=str(fileNum+1)
+        evenFileName[m.span()[1]]=str(fileNum+1)
         evenFileName = "".join(evenFileName)
         oddFile = open(oddFileName,'rb')
         evenFile = open(evenFileName,'rb')
@@ -170,7 +166,7 @@ def convertFixed(inFile,outFile):
                 tile[row][pixelPos[bytesToRead]+1]=byte >> 4
         tiles.append(tile)
     AltWriteImage(outFile,xsize,ysize,tileXsize,tileYsize,tiles)
-      
+
 def WriteImage(imgName,xsize,ysize,tileXsize,tileYsize,tiles):
     #Save image
     img = PIL.Image.new('RGB',(xsize, ysize))
