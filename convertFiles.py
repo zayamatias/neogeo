@@ -15,10 +15,14 @@ for colidx in range (0,16):
 def main():
     args=sys.argv
     if len(args)<=2 :
-        print ("Missing arguments, please use:\nconvertFiles.py <inputfile> <outputfile>\n")
+        print ("Missing arguments, please use:\nconvertFiles.py <inputfile> <outputfile> <image_width (default 1024) and divisible by 16px>\n")
         #sys.exit(1)
     inFile = args[1]
     outFile = args[2]
+    try:
+        fileWidth = int(args[3]) 
+    except:
+        fileWidth=1024
     #Detect what kind of file we're dealing with
     filetypes = [["FIXED","[a-zA-Z]*[_\-][sS][0-9].*"],["SPRITES","[a-zA-Z]*[_\-][cC][0-9].*"]]
     convert = ""
@@ -27,18 +31,18 @@ def main():
         if m is not None:
             convert = filetype [0]
     if convert == "FIXED":
-        convertFixed (inFile,outFile)
+        convertFixed (inFile,outFile,fileWidth)
         print ("Conversion done")
         sys.exit(0)
     if convert == "SPRITES":
-        convertSprites (inFile,outFile)
+        convertSprites (inFile,outFile,fileWidth)
         print ("Conversion done")
         sys.exit(0)
     else:
         print ("Cannot seem to find the type of ROM you wish to use")
         sys.exit(1)
 
-def convertSprites(inFile,outFile):
+def convertSprites(inFile,outFile,xsize):
     print ("I shall convert your sprites into an image!")
     ### Find all sprite files
     # First find where the sequence number is located
@@ -61,7 +65,6 @@ def convertSprites(inFile,outFile):
         evenFile = open(evenFileName,'rb')
         statinfo = os.stat(oddFileName)
         fileSize = statinfo.st_size
-        xsize = 128
         tileXsize = 16
         tileYsize = 16
         ysize = int(int(fileSize/64)/int(xsize/tileXsize))*tileYsize #Each 1 bytes is 4 pixels!!
@@ -71,8 +74,8 @@ def convertSprites(inFile,outFile):
         oddBytes =  oddFile.read()
         evenBytes = evenFile.read()
         for sprites in range(0,int(fileSize/64)):
-            tile = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
-            #print (sprites,end="\r")
+            tile = [[0 for i in range(tileYsize)] for i in range (tileXsize)]
+            print (sprites,end="\r")
             for tileNum in range(4):
                 for row in range(int(tileYsize/2)):
                     oddByte0 = oddBytes[byteNum]
@@ -109,12 +112,11 @@ def convertSprites(inFile,outFile):
         AltWriteImage(outImage,xsize,ysize,tileXsize,tileYsize,tiles)
         outFileNum = outFileNum + 1
 
-def convertFixed(inFile,outFile):
+def convertFixed(inFile,outFile,xsize):
     readFile = open(inFile,'rb')
     statinfo = os.stat(inFile)
     fileSize = statinfo.st_size
 
-    xsize = 512
     ysize = int(fileSize / xsize)*2 #Each byte is 2 pixels!!
 
     tileXsize = 8
