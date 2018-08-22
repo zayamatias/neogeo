@@ -17,8 +17,8 @@ def main():
     if len(args)<=2 :
         print ("Missing arguments, please use:\nconvertFiles.py <inputfile> <outputfile>\n")
         #sys.exit(1)
-    inFile = "/home/matias/neogeo/testfiles/zupan_c1.rom"#args[1]
-    outFile = "/home/matias/neogeo/testfiles/zupan.png" #args[2]
+    inFile = args[1]
+    outFile = args[2]
     #Detect what kind of file we're dealing with
     filetypes = [["FIXED","[a-zA-Z]*[_\-][sS][0-9].*"],["SPRITES","[a-zA-Z]*[_\-][cC][0-9].*"]]
     convert = ""
@@ -61,20 +61,17 @@ def convertSprites(inFile,outFile):
         evenFile = open(evenFileName,'rb')
         statinfo = os.stat(oddFileName)
         fileSize = statinfo.st_size
-        xsize = 2048
+        xsize = 128
         tileXsize = 16
         tileYsize = 16
         ysize = int(int(fileSize/64)/int(xsize/tileXsize))*tileYsize #Each 1 bytes is 4 pixels!!
         tiles =[]
         tileQty = int((xsize/tileXsize)*(ysize/tileYsize))
-        bytePos = 0
         byteNum = 0
+        oddBytes =  oddFile.read()
+        evenBytes = evenFile.read()
         for sprites in range(0,int(fileSize/64)):
-            oddFile.seek(bytePos)
-            evenFile.seek(bytePos)
-            oddBytes =  oddFile.read(64)
-            evenBytes = evenFile.read(64)
-            tile = [[0] * tileXsize]*tileYsize
+            tile = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
             #print (sprites,end="\r")
             for tileNum in range(4):
                 for row in range(int(tileYsize/2)):
@@ -86,50 +83,24 @@ def convertSprites(inFile,outFile):
                     bitplane1 = list(format(oddByte1,'08b'))
                     bitplane2 = list(format(evenByte0,'08b'))
                     bitplane3 = list(format(evenByte1,'08b'))
-                    if (bitplane1[1]==1):
-                        print ('yeah')
                     if tileNum == 0:
                         for col in range (8,16):
-                            color = int(bitplane3[col-8])<<3
-                            color = color | (int(bitplane2[col-8])<<2)
-                            color = color | (int(bitplane1[col-8])<<1)
-                            color = color | (int(bitplane0[col-8]))
-                            tile[row][col]=color
+                            pixColor = (int(bitplane3[col-8])<<3) | (int(bitplane2[col-8])<<2) | (int(bitplane1[col-8])<<1) | (int(bitplane0[col-8])) 
+                            tile[row][col] = pixColor
                     if tileNum == 1:
                         for col in range (8,16):
-                            color = int(bitplane3[col-8])<<3
-                            color = color | (int(bitplane2[col-8])<<2)
-                            color = color | (int(bitplane1[col-8])<<1)
-                            color = color | (int(bitplane0[col-8]))
-                            tile[row+8][col]=color
+                            pixColor = (int(bitplane3[col-8])<<3) | (int(bitplane2[col-8])<<2) | (int(bitplane1[col-8])<<1) | (int(bitplane0[col-8])) 
+                            tile[row+8][col] = pixColor
                     if tileNum == 2:
                         for col in range (0,8):
-                            color = int(bitplane3[col])<<3
-                            color = color | (int(bitplane2[col])<<2)
-                            color = color | (int(bitplane1[col])<<1)
-                            color = color | (int(bitplane0[col]))
-                            tile[row][col]=color
+                            pixColor = (int(bitplane3[col])<<3) | (int(bitplane2[col])<<2) | (int(bitplane1[col])<<1) | (int(bitplane0[col])) 
+                            tile[row][col] = pixColor
                     if tileNum == 3:
                         for col in range (0,8):
-                            color = int(bitplane3[col])<<3
-                            color = color | (int(bitplane2[col])<<2)
-                            color = color | (int(bitplane1[col])<<1)
-                            color = color | (int(bitplane0[col]))
-                            tile[row+8][col]=color
+                            pixColor = (int(bitplane3[col])<<3) | (int(bitplane2[col])<<2) | (int(bitplane1[col])<<1) | (int(bitplane0[col])) 
+                            tile[row+8][col] = pixColor 
                     byteNum = byteNum + 2
-            bytePos = bytePos + byteNum
-            byteNum = 0
             tiles.append(tile)
-        f = open ("testfiles/text.txt","w")
-        ### Estoy seguro que el fallo esta en la creaion de los jodios tiles.....
-        for tile in tiles:
-            for row in tile:
-                stri = ""
-                for char in row:
-                    stri = stri + str(char) + " "
-                f.write(stri+"\n")
-            f.write("\n")
-        f.close
         byteNum = 0
         fileNum = fileNum + 2
         outImage = outFile
