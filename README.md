@@ -29,9 +29,12 @@ This file is an adaptation of the original makefile that can be found here http:
 
 ## convertfiles.py
 
-Will convert from Neogeo format to image and viceversa, 3 parameters are needed:
-<inFile> -> The file to read, it will look for the C or S pattern for (C=Sprites, S=Fixed Tiles), otherwise it will be treated as an image
-<outFile> -> Same as outFile, with same pattern detection
-<imageWidth> -> The desired width of the resulting image when exporting to an image
+Will convert from Neogeo format to image and viceversa:
+
+_Parameters are_
+* <inFile> -> The file to read, it will look for the C or S pattern for (C=Sprites, S=Fixed Tiles), otherwise it will be treated as an image
+* <outFile> -> Same as outFile, with same pattern detection
+* <imageWidth> -> The desired width of the resulting image when exporting to an image
   
-The image will have a 16 color grayscale, the rom files do not store palettes. In the same way, the resulting roms will be have an indexed palette from 0 to 15, meaning that if you have more than 16 colours they will be indexed to teh corresponding 0-15 range. Up to you to assign the proper palette in the code.
+If exporting an image, teh resulting imae will have a 16 color grayscale palette.ROM files do not store palettes. In the same way, the resulting ROMS will be have an indexed palette from 0 to 15, meaning that if you have more than 16 colours they will be indexed to teh corresponding 0-15 range (for example color 40 will be index (40 mod 16 = 8).
+Up to you to assign the proper palette in the code.
