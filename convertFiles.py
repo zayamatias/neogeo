@@ -60,9 +60,12 @@ def convertToSprites(inFile,outFile):
     print ("Convert To Sprites")
     pe = re.compile ("[0-9]")
     m = pe.search(inFile)
-    searchFile = list(inFile)
-    searchFile[m.span()[1]-1]="?"
-    searchFile="".join(searchFile)
+    if (m is not None):
+        searchFile = list(inFile)   
+        searchFile[m.span()[1]-1]="?"
+        searchFile="".join(searchFile)
+    else:
+        searchFile = inFile
     foundFiles = glob.glob(searchFile)
     numFiles = int(len(foundFiles))
     cFileCount = 1
@@ -85,10 +88,10 @@ def convertToSprites(inFile,outFile):
         img = img.convert('RGB')
         #Check if image has a MAX of 16 colours
         RGBColors = img.getcolors()
-        if (len(RGBColors))>16:
-            print ("Image has more than 16 colors, it cannot be converted\Remember that this conversion will use the palette index as index for the color in the resulting file.")
-        colors = [0 for i in range (0,16)]
-        idx=15
+        #TODO allow for multiple palettes (references to basic colors eventually)
+        colors = [0 for i in range (0,len(RGBColors))]
+        idx=len((RGBColors))-1
+        print (idx)
         #For some reason the colors are inverted in the palette....This need to be further checked: TODO
         for RGBColor in RGBColors:
             colors[idx]=RGBColor[1]
@@ -114,7 +117,9 @@ def convertToSprites(inFile,outFile):
                     px = pxOff+col
                     py = pyOff+row
                     pixel = img.getpixel((px,py))
-                    colIdx = colors.index (pixel)
+                    colIdx = (colors.index (pixel)%16)
+                    if colIdx > 15:
+                        print ("the horror!!")
                     sprRow[col] = colIdx
                 sprite.append(sprRow)
             for row in range(tileYsize):
