@@ -20,7 +20,7 @@ def main():
     inFile = args[1]
     outFile = args[2]
     try:
-        fileWidth = int(args[3]) 
+        fileWidth = int(args[3])
     except:
         fileWidth=1024
     #Detect what kind of file we're dealing with
@@ -61,7 +61,7 @@ def convertToSprites(inFile,outFile):
     pe = re.compile ("[0-9]")
     m = pe.search(inFile)
     if (m is not None):
-        searchFile = list(inFile)   
+        searchFile = list(inFile)
         searchFile[m.span()[1]-1]="?"
         searchFile="".join(searchFile)
     else:
@@ -148,7 +148,7 @@ def convertToSprites(inFile,outFile):
         print ("Created "+oddFileName + " & "+evenFileName+" files")
 
 def calcDestSpriteByte(row,vCol):
-    destByte = 0    
+    destByte = 0
     if (vCol == 0 ):
         #We're in the 3rd or 4th Tile of the sprite
         byteOff= 32
@@ -159,7 +159,7 @@ def calcDestSpriteByte(row,vCol):
     return destByte
 
 
-    
+
 def convertToFixed(inFile,outFile):
     print ("Convert to Fixed")
     img = PIL.Image.open(inFile)
@@ -206,7 +206,7 @@ def convertToFixed(inFile,outFile):
     f.write(byteFile)
     f.close
     print ("Created "+outFile+" file")
-    
+
 def convertSprites(inFile,outFile,xsize):
     print ("Converting sprites to image")
     ### Find all sprite files
@@ -252,27 +252,32 @@ def convertSprites(inFile,outFile,xsize):
                     bitplane3 = list(format(evenByte1,'08b'))
                     if tileNum == 0:
                         for col in range (8,16):
-                            pixColor = (int(bitplane3[col-8])<<3) | (int(bitplane2[col-8])<<2) | (int(bitplane1[col-8])<<1) | (int(bitplane0[col-8])) 
+                            pixColor = (int(bitplane3[col-8])<<3) | (int(bitplane2[col-8])<<2) | (int(bitplane1[col-8])<<1) | (int(bitplane0[col-8]))
                             tile[row][col] = pixColor
                     if tileNum == 1:
                         for col in range (8,16):
-                            pixColor = (int(bitplane3[col-8])<<3) | (int(bitplane2[col-8])<<2) | (int(bitplane1[col-8])<<1) | (int(bitplane0[col-8])) 
+                            pixColor = (int(bitplane3[col-8])<<3) | (int(bitplane2[col-8])<<2) | (int(bitplane1[col-8])<<1) | (int(bitplane0[col-8]))
                             tile[row+8][col] = pixColor
                     if tileNum == 2:
                         for col in range (0,8):
-                            pixColor = (int(bitplane3[col])<<3) | (int(bitplane2[col])<<2) | (int(bitplane1[col])<<1) | (int(bitplane0[col])) 
+                            pixColor = (int(bitplane3[col])<<3) | (int(bitplane2[col])<<2) | (int(bitplane1[col])<<1) | (int(bitplane0[col]))
                             tile[row][col] = pixColor
                     if tileNum == 3:
                         for col in range (0,8):
-                            pixColor = (int(bitplane3[col])<<3) | (int(bitplane2[col])<<2) | (int(bitplane1[col])<<1) | (int(bitplane0[col])) 
-                            tile[row+8][col] = pixColor 
+                            pixColor = (int(bitplane3[col])<<3) | (int(bitplane2[col])<<2) | (int(bitplane1[col])<<1) | (int(bitplane0[col]))
+                            tile[row+8][col] = pixColor
                     byteNum = byteNum + 2
             tiles.append(tile)
         byteNum = 0
         fileNum = fileNum + 2
-        outImage = outFile
-        fileStrNum = str(outFileNum)+"."
-        outImage = outImage.replace(".",fileStrNum)
+        pe = re.compile ("\w\.")
+        m = pe.search(outFile)
+        if (m is not None):
+            outImage = list(outFile)
+            outImage.insert(m.span()[1]-1,str(outFileNum))
+            outImage="".join(outImage)
+        else:
+            outImage = outFile
         AltWriteImage(outImage,xsize,ysize,tileXsize,tileYsize,tiles)
         outFileNum = outFileNum + 1
 
